@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Neon Login</title>
+    <style>
+        :root {
+            --neon-yellow: #fffb00;
+            --dark-bg: #050505;
+            --input-bg: #111;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--dark-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+            transition: 0.5s;
+        }
+
+        /* Pull String Styling */
+        .string-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            cursor: pointer;
+        }
+
+        .rope {
+            width: 3px;
+            height: 150px;
+            background: linear-gradient(#000, #555);
+            margin: 0 auto;
+            position: relative;
+            transition: height 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .handle {
+            width: 20px;
+            height: 20px;
+            background: #333;
+            border-radius: 50%;
+            position: absolute;
+            bottom: -10px;
+            left: -8.5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* Login Card */
+        .login-card {
+            background: #0a0a0a;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            opacity: 0.2; /* Initially dim */
+            transform: translateY(20px);
+            transition: 0.5s ease;
+            border: 1px solid #222;
+            width: 300px;
+        }
+
+        h2 {
+            color: #444;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            transition: 0.5s;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: var(--input-bg);
+            border: 1px solid #333;
+            border-radius: 5px;
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        /* Glow Effects when ON */
+        body.on {
+            background-color: #000;
+        }
+
+        body.on .login-card {
+            opacity: 1;
+            transform: translateY(0);
+            border-color: var(--neon-yellow);
+            box-shadow: 0 0 20px rgba(255, 251, 0, 0.2);
+        }
+
+        body.on h2 {
+            color: var(--neon-yellow);
+            text-shadow: 0 0 10px var(--neon-yellow);
+        }
+
+        body.on .handle {
+            background: var(--neon-yellow);
+            box-shadow: 0 0 20px var(--neon-yellow);
+        }
+
+        body.on input:focus {
+            border-color: var(--neon-yellow);
+            box-shadow: 0 0 10px var(--neon-yellow);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid #444;
+            color: #444;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 5px;
+        }
+
+        body.on .login-btn {
+            border-color: var(--neon-yellow);
+            color: var(--neon-yellow);
+        }
+
+        body.on .login-btn:hover {
+            background: var(--neon-yellow);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-yellow);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="string-container" id="pullTrigger">
+        <div class="rope" id="rope">
+            <div class="handle"></div>
+        </div>
+    </div>
+
+    <div class="login-card">
+        <h2>LOGIN</h2>
+        <div class="input-group">
+            <input type="email" placeholder="Email Address">
+        </div>
+        <div class="input-group">
+            <input type="password" placeholder="Password">
+        </div>
+        <button class="login-btn">ENTER</button>
+    </div>
+
+    <script>
+        const pullTrigger = document.getElementById('pullTrigger');
+        const rope = document.getElementById('rope');
+        const body = document.body;
+
+        let isPulling = false;
+        let startY = 0;
+
+        // Interaction Logic
+        const start = (e) => {
+            isPulling = true;
+            startY = e.touches ? e.touches[0].clientY : e.clientY;
+            rope.style.transition = "none";
+        };
+
+        const move = (e) => {
+            if (!isPulling) return;
+            const currentY = e.touches ? e.touches[0].clientY : e.clientY;
+            const dist = currentY - startY;
+            if (dist > 0 && dist < 100) {
+                rope.style.height = (150 + dist) + "px";
+            }
+        };
+
+        const end = (e) => {
+            if (!isPulling) return;
+            const currentY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+            if (currentY - startY > 40) {
+                body.classList.toggle('on');
+                if(navigator.vibrate) navigator.vibrate(50);
+            }
+            isPulling = false;
+            rope.style.transition = "height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            rope.style.height = "150px";
+        };
+
+        pullTrigger.addEventListener('mousedown', start);
+        window.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', end);
+
+        pullTrigger.addEventListener('touchstart', start);
+        window.addEventListener('touchmove', move);
+        window.addEventListener('touchend', end);
+    </script>
+</body>
+</html>
